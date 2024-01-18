@@ -1,0 +1,449 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Sample API (practicas 2023) - OpenAPI 3.0",
+    "description": "This is a Sample API for a 𝘤𝘭𝘪𝘤𝘬 𝘢𝘯𝘥 𝘤𝘰𝘭𝘭𝘦𝘤𝘵 app (intended for small business) in the context of a Web Development Course.",
+    "version": "1.0.11"
+  },
+  "tags": [
+    {
+      "name": "products",
+      "description": "The catalog"
+    },
+    {
+      "name": "product",
+      "description": "The products"
+    },
+    {
+      "name": "basket",
+      "description": "Window shopping (potental buyer's basket)"
+    },
+    {
+      "name": "orders",
+      "description": "Client's orders"
+    }
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Show our complete catalog.",
+        "description": "Returns an array with all our products.",
+        "operationId": "getAllProducts",
+        "responses": {
+          "200": {
+            "description": "Succesful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductSummary"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found."
+          },
+          "500": {
+            "description": "Something went wrong. Please try again."
+          }
+        }
+      }
+    },
+    "/products/{product_id}": {
+      "get": {
+        "tags": [
+          "product"
+        ],
+        "summary": "Returns a single product.",
+        "description": "Returns a JSON object with de product information.",
+        "operationId": "getProductById",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "description": "ID of the product.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succesful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Catalog not found."
+          },
+          "500": {
+            "description": "Something went wrong. Please try again."
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Add a new order to the store.",
+        "description": "Add a new order to the store.",
+        "operationId": "addOrder",
+        "requestBody": {
+          "description": "Create a new order in the store.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Order"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input."
+          },
+          "500": {
+            "description": "Something went wrong. Please try again."
+          }
+        }
+      }
+    },
+    "/baskets": {
+      "post": {
+        "tags": [
+          "basket"
+        ],
+        "summary": "Start using the basket.",
+        "description": "Create a new basket (by adding the first item).",
+        "operationId": "addBasket",
+        "requestBody": {
+          "description": "Create a new basket.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewBasket"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Basket"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input."
+          },
+          "500": {
+            "description": "Something went wrong. Please try again."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "basket"
+        ],
+        "summary": "Update basket.",
+        "description": "Add or remove products from basket.",
+        "operationId": "updateBasket",
+        "requestBody": {
+          "description": "Update an existent basket.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Basket"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Basket"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Basket not found."
+          },
+          "405": {
+            "description": "Invalid input."
+          },
+          "500": {
+            "description": "Something went wrong. Please try again."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 10
+          },
+          "name": {
+            "type": "string",
+            "example": "Donut Classic"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "example": 3.25
+          },
+          "image_ref": {
+            "type": "string",
+            "example": "/DAM/DonutClassic.jpg"
+          },
+          "description": {
+            "type": "string",
+            "example": "Delicioso donut cubierto de chocolate con nueces."
+          },
+          "productIngredients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Ingredient"
+            }
+          },
+          "productDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Detail"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "Ingredient": {
+        "type": "object",
+        "properties": {
+          "ingredient_id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 14
+          },
+          "ingredient": {
+            "type": "string",
+            "example": "chocolate"
+          }
+        }
+      },
+      "Detail": {
+        "type": "object",
+        "properties": {
+          "detail_id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 14
+          },
+          "attribute": {
+            "type": "string",
+            "example": "vegano"
+          }
+        }
+      },
+      "ProductSummary": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 10
+          },
+          "name": {
+            "type": "string",
+            "example": "Donut Classic"
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "example": 3.25
+          },
+          "image_ref": {
+            "type": "string",
+            "example": "/DAM/DonutClassic.jpg"
+          }
+        }
+      },
+      "BasketContentItem": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "format": "inter64",
+            "example": 8
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "inter32",
+            "example": 2
+          },
+          "unit_price": {
+            "type": "number",
+            "format": "double",
+            "example": 2.7
+          }
+        }
+      },
+      "Basket": {
+        "type": "object",
+        "properties": {
+          "basket_id": {
+            "type": "integer",
+            "format": "inter64",
+            "example": 1054
+          },
+          "status": {
+            "type": "string",
+            "description": "basket status",
+            "enum": [
+              "basket en uso",
+              "basket pasada a order"
+            ]
+          },
+          "basketContent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BasketContentItem"
+            }
+          },
+          "basketAmount": {
+            "type": "number",
+            "format": "double",
+            "example": 13.5
+          }
+        }
+      },
+      "NewBasket": {
+        "type": "object",
+        "properties": {
+          "basketContent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BasketContentItem"
+            }
+          },
+          "basketAmount": {
+            "type": "number",
+            "format": "double",
+            "example": 9.25
+          }
+        }
+      },
+      "OrderContentItem": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "format": "inter64",
+            "example": 8
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "inter32",
+            "example": 2
+          },
+          "unit_price": {
+            "type": "number",
+            "format": "double",
+            "example": 2.7
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1001,
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "order status",
+            "enum": [
+              "pedido confirmado",
+              "pedido listo para recoger",
+              "pedido recogido",
+              "pedido anulado"
+            ]
+          },
+          "customer_name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "customer_email": {
+            "type": "string",
+            "example": "johndoe@email.com"
+          },
+          "customer_telephone": {
+            "type": "string",
+            "example": 616525434
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "example": 5.4
+          },
+          "date": {
+            "type": "string",
+            "example": "2023-11-02T00:00:00.000Z"
+          },
+          "time": {
+            "type": "string",
+            "example": "17:25:00"
+          },
+          "orderContent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderContentItem"
+            }
+          }
+        }
+      }
+    }
+  }
+}
