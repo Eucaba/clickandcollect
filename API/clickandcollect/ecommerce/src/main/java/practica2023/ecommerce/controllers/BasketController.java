@@ -74,12 +74,18 @@ public class BasketController {
                 bhp.setProduct_id(bcr.getProduct_id());
                 bhp.setQuantity(bcr.getQuantity());
                 bhpr.saveAndFlush(bhp);
-            } //else { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");}
+            } // else { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not
+              // found");}
 
-            /* ResponseStatusException es una clase en Spring Framework que representa una excepción específica
-            para gestionar errores relacionados con códigos de estado HTTP .
-            Se usa en gral para indicar que se ha producido un error y especificar el código de estado HTTP que debería enviarse como respuesta a la solicitud.
-            Esta clase proporciona constructores que permiten especificar el código de estado HTTP y opcionalmente un mensaje y/o una causa para la excepción.*/
+            /*
+             * ResponseStatusException es una clase en Spring Framework que representa una
+             * excepción específica
+             * para gestionar errores relacionados con códigos de estado HTTP .
+             * Se usa en gral para indicar que se ha producido un error y especificar el
+             * código de estado HTTP que debería enviarse como respuesta a la solicitud.
+             * Esta clase proporciona constructores que permiten especificar el código de
+             * estado HTTP y opcionalmente un mensaje y/o una causa para la excepción.
+             */
         }
 
         newBasket.setBasket_id(simpleBasket.getBasket_id());
@@ -94,37 +100,45 @@ public class BasketController {
 
         double mBasketAmount = 0;
 
-        // lo único que cambia es el basketContent:
-        // borramos el basket content anterior alojado de la tabla baskets_has_products
-        bhpr.deleteBasketsHasProducstByBasketId(mBasket.getBasket_id());
+        Optional<Basket> optionalBasket = br.findById(mBasket.getBasket_id());
 
-        for (BasketContentRest bcr : mBasket.getBasketContent()) {
+        if (optionalBasket.isPresent()) {
+            // lo único que cambia es el basketContent:
+            // borramos el basket content anterior alojado de la tabla baskets_has_products
+            bhpr.deleteBasketsHasProducstByBasketId(mBasket.getBasket_id());
 
-            // reviso que el producto que pida exista
-            Optional<Product> optionalProduct = pr.findById(bcr.getProduct_id());
-            if (optionalProduct.isPresent()) {
+            for (BasketContentRest bcr : mBasket.getBasketContent()) {
 
-                // si exite, grabamos la nueva información en la tabla baskets_has_products
-                BasketsHasProducts bhp = new BasketsHasProducts();
-                bhp.setBasket_id(mBasket.getBasket_id());
-                bhp.setProduct_id(bcr.getProduct_id());
-                bhp.setQuantity(bcr.getQuantity());
-                bhpr.saveAndFlush(bhp);
+                // reviso que el producto que pida exista
+                Optional<Product> optionalProduct = pr.findById(bcr.getProduct_id());
+                if (optionalProduct.isPresent()) {
 
-                // aprovechamos que estamos recorriendo el basketContent de mBasket,
-                // y revisamos que los precios que llegan de "fuera" sean acorde a la BBDD (si
-                // no, corregimos)
-                Product product = optionalProduct.get();
-                if ((bcr.getUnit_price()) != (product.getPrice())) {
-                    bcr.setUnit_price(product.getPrice());
-                }
+                    // si exite, grabamos la nueva información en la tabla baskets_has_products
+                    BasketsHasProducts bhp = new BasketsHasProducts();
+                    bhp.setBasket_id(mBasket.getBasket_id());
+                    bhp.setProduct_id(bcr.getProduct_id());
+                    bhp.setQuantity(bcr.getQuantity());
+                    bhpr.saveAndFlush(bhp);
 
-                // Actualizo el precio total (en base a los precios de la BBDD)
-                mBasketAmount = mBasketAmount + (bcr.getQuantity()) * (product.getPrice());
+                    // aprovechamos que estamos recorriendo el basketContent de mBasket,
+                    // y revisamos que los precios que llegan de "fuera" sean acorde a la BBDD (si
+                    // no, corregimos)
+                    Product product = optionalProduct.get();
+                    if ((bcr.getUnit_price()) != (product.getPrice())) {
+                        bcr.setUnit_price(product.getPrice());
+                    }
 
-            } // al final del bloque vendría un else {} para manejar el error cuando sepa CÓMO
+                    // Actualizo el precio total (en base a los precios de la BBDD)
+                    mBasketAmount = mBasketAmount + (bcr.getQuantity()) * (product.getPrice());
+
+                } // al final del bloque vendría un else {} para manejar el error cuando sepa CÓMO
+            }
+            mBasket.setBasketAmount(mBasketAmount);
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Basket not found");
         }
-        mBasket.setBasketAmount(mBasketAmount);
+
         return mBasket;
     }
 

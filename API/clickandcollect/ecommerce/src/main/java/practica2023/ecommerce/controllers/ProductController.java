@@ -1,10 +1,12 @@
 package practica2023.ecommerce.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import practica2023.ecommerce.repositories.ProductRepository;
 import practica2023.ecommerce.repositories.ProductsHasDetailsRepository;
@@ -21,6 +23,7 @@ import practica2023.ecommerce.entities.ProductsHasIngredients;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 /*
@@ -75,48 +78,42 @@ public class ProductController {
 
     @GetMapping(value = "/products/{product_id}")
     ProductRest getProductById(@PathVariable int product_id) {
+
         ProductRest foundProduct = new ProductRest();
         List<Ingredient> thisProductIngredients = new ArrayList<>();
         List<Detail> thisProductDetails = new ArrayList<>();
 
-        for (Product product : pr.findAll()) {
-            if ((product.getProduct_id()) == (product_id)) {
-                foundProduct.setProduct_id(product.getProduct_id());
-                foundProduct.setName(product.getName());
-                foundProduct.setImage_ref(product.getImage_ref());
-                foundProduct.setPrice(product.getPrice());
-                foundProduct.setDescription(product.getDescription());
-                break;
-            }
-        }
+        Optional<Product> optionalProduct = pr.findById(product_id);
+        
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            foundProduct.setProduct_id(product.getProduct_id());
+            foundProduct.setName(product.getName());
+            foundProduct.setImage_ref(product.getImage_ref());
+            foundProduct.setPrice(product.getPrice());
+            foundProduct.setDescription(product.getDescription());
 
-        for (ProductsHasIngredients phi : phir.findAll()) {
-            if ((phi.getProduct_id()) == (product_id)) {
-                Ingredient i = new Ingredient();
-                i.setIngredient_id(phi.getIngredient_id());
-                for (Ingredient ingredient : ir.findAll()) {
-                    if ((ingredient.getIngredient_id()) == (phi.getIngredient_id())) {
-                        i.setIngredient(ingredient.getIngredient());
-                    }
+            for (ProductsHasIngredients phi : phir.findProductsHasIngredientsByProductId(product.getProduct_id())) {
+                Optional<Ingredient> optionalIngredient = ir.findById(phi.getIngredient_id());
+                if (optionalIngredient.isPresent()) {
+                    Ingredient ingredient = optionalIngredient.get();
+                    thisProductIngredients.add(ingredient);
                 }
-                thisProductIngredients.add(i);
             }
-        }
-        foundProduct.setProductIngredients(thisProductIngredients);
+            foundProduct.setProductIngredients(thisProductIngredients);
 
-        for (ProductsHasDetails phd : phdr.findAll()) {
-            if ((phd.getProduct_id()) == (product_id)) {
-                Detail d = new Detail();
-                d.setDetail_id(phd.getDetail_id());
-                for (Detail detail : dr.findAll()) {
-                    if ((detail.getDetail_id()) == (phd.getDetail_id())) {
-                        d.setAttribute(detail.getAttribute());
-                    }
+            for (ProductsHasDetails phd : phdr.findProductsHasDetailsByProductId(product.getProduct_id())){
+                Optional<Detail> optionalDetail = dr.findById(phd.getDetail_id());
+                if (optionalDetail.isPresent()) {
+                    Detail detail = optionalDetail.get();
+                    thisProductDetails.add(detail);
                 }
-                thisProductDetails.add(d);
             }
+            foundProduct.setProductDetails(thisProductDetails);
+
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found");
         }
-        foundProduct.setProductDetails(thisProductDetails);
 
         return foundProduct;
     }

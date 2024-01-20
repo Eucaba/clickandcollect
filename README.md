@@ -1,5 +1,5 @@
 # :doughnut::calling: Click and collect
-##(*Currently working on this project* 🔧🔨)
+## (*Currently working on this project* 🔧🔨)
 
 ## :information_source: Description
 This project was intended to be a brief assignment from my Professional Certificate in Web Development, but then I thought: what if instead of developing a section of something I start something from scratch? That way, once the assignment is over, I can continue working on it and experience the whole process, see the different topics from the course come together.
