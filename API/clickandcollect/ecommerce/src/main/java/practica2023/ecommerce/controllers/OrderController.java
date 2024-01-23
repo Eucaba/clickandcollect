@@ -118,11 +118,4 @@ public class OrderController {
         norder.setAmount(totalAmount);
         return norder;
     }
-
-     /*Creo una newOrder --> params: objeto OrderRest (norder) que será proporcionado en el body de la solicitud
-    (Spring deserializa el cuerpo de la solicitud y lo pasa a objeto)
-    En el método usamos un bean del repository para saveAndFlush el objeto que pasamos por params
-    y nos devuelve el objeto recién creado y guardado en la BBDD.
-    (el objeto se serializará automáticamente a JSON para la respuesta)*/
-
 }
