@@ -1,4 +1,5 @@
 # :doughnut::calling: Click and collect
+
 ## (*Currently working on this project* 🔧🔨)
 
 ## :information_source: Description
@@ -10,9 +11,13 @@ The original idea is to create a click-and-collect app for a small business. The
 
 The initial design addresses the basic requirements of the original idea but is open to further modifications to extend the functionalities towards a more ambitious approach.
 
+Yo can check the MVP Firgma prototype (here)[https://www.figma.com/file/MNN6AUVT0xuEMxL3a54md4/PMV-Click-and-collect---Pr%C3%A0ctiques-2023?type=design&node-id=0-1&mode=design&t=98QI9AV3a9JngR1L-0]
+
 ### :dart: Built using (so far):
+- Figma
+- Swagger Editor
+- MySQL
 - Java
 - Spring Boot
-- MySQL
 
 
