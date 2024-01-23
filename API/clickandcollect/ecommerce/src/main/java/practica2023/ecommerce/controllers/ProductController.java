@@ -26,12 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-/*
- * Todos los métodos maneja HTTP y el resultado no depende de ninguna vista (pq
- * es JSON)
- */
+//Todos los métodos maneja HTTP y el resultado no depende de ninguna vista (pq es JSON)
 @CrossOrigin
-/* para evitar problemas de CORS */
+//para evitar problemas de CORS
 
 public class ProductController {
 
@@ -53,10 +50,6 @@ public class ProductController {
      * ProductRepository();
      */
 
-    @GetMapping /* este va a ruta raíz, es sólo para comprobar a lo cutre */
-    String hola() {
-        return "Hola, soc el controlador de productes.";
-    }
 
     @GetMapping(value = "/products") /* no passa res si ha l'API doc posa Array i fem una List */
     List<ProductRestBase> getAllProducts() {

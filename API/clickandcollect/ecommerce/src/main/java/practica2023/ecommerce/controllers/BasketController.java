@@ -141,24 +141,4 @@ public class BasketController {
 
         return mBasket;
     }
-
-    /*
-     * @PutMapping(value = "/baskets")
-     * Basket updateBasket(@RequestBody Basket updatedBasket) {
-     * return br.findById(updatedBasket.getBasket_id())
-     * .map(basket -> {
-     * basket.setStatus(updatedBasket.getStatus());
-     * return br.saveAndFlush(basket);
-     * })
-     * .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-     * "Basket not found"));
-     * }
-     * .map se usa cuando es "optional" (puede estar o no)
-     * hace que lo que hay entre paréntesis se intente realizar sólo si el optional
-     * no está vacío,
-     * si está vacío lanzamos excepción. Si no lo hacemos lo que pase al venir vacío
-     * el optional
-     * dependerá del entorno y puede variar
-     */
-
 }

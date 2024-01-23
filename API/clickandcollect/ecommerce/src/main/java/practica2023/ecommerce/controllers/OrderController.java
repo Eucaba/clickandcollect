@@ -33,11 +33,6 @@ public class OrderController {
     @Autowired
     ProductRepository pr;
 
-    @GetMapping(value="/orders")
-    List<Order> getAllProducts(){
-        return or.findAll();
-    }
-
     @GetMapping(value="/orders/{order_id}")
     OrderRest getOrderById(@PathVariable int order_id){
 

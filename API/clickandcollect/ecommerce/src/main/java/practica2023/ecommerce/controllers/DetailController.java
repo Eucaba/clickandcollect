@@ -11,9 +11,7 @@ import practica2023.ecommerce.entities.Detail;
 import java.util.List;
 
 @RestController
-/* Todos los métodos maneja HTTP y el resultado no depende de ninguna vista (pq es JSON) */
 @CrossOrigin
-/* para evitar problemas de CORS*/
 
 public class DetailController {
 
