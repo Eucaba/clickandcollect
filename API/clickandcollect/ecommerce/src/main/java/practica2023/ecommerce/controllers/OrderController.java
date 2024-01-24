@@ -1,12 +1,12 @@
 package practica2023.ecommerce.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import practica2023.ecommerce.repositories.OrderRepository;
 import practica2023.ecommerce.repositories.OrdersHasProductsRepository;
@@ -17,8 +17,6 @@ import practica2023.ecommerce.entities.Order;
 import practica2023.ecommerce.entities.OrdersHasProducts;
 import practica2023.ecommerce.entities.Product;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -33,48 +31,8 @@ public class OrderController {
     @Autowired
     ProductRepository pr;
 
-    @GetMapping(value="/orders/{order_id}")
-    OrderRest getOrderById(@PathVariable int order_id){
-
-        OrderRest foundOrder = new OrderRest();
-        OrderContentRest orderContentRest;
-        List<OrderContentRest> foundOrderContent = new ArrayList<>(); //inicializar lista, en getAllx() se inicializa sola pero aquí no
-
-        for (Order order : or.findAll()) {
-            if ((order.getOrder_id()) == (order_id)) {
-
-                foundOrder.setOrder_id(order.getOrder_id());
-                foundOrder.setStatus(order.getStatus());
-                foundOrder.setCustomer_name(order.getCustomer_name());
-                foundOrder.setCustomer_email(order.getCustomer_email());
-                foundOrder.setCustomer_telephone(order.getCustomer_telephone());
-                foundOrder.setAmount(order.getAmount());
-                foundOrder.setDate(order.getDate());
-                foundOrder.setTime(order.getTime());
-
-                for (OrdersHasProducts ordersHasProducts : ohpr.findAll() ){
-                    if ( (ordersHasProducts.getOrder_id()) == (order_id)) {
-                        orderContentRest = new OrderContentRest();
-                        orderContentRest.setProduct_id(ordersHasProducts.getProduct_id());
-                        orderContentRest.setQuantity(ordersHasProducts.getQuantity());
-                        orderContentRest.setUnit_price(ordersHasProducts.getUnit_price());
-
-                        foundOrderContent.add(orderContentRest);
-                        
-                    }
-                }
-
-                foundOrder.setOrderContent(foundOrderContent);
-
-                break;
-            }
-        }
-        return foundOrder;
-    }
-
-
-    @PostMapping(value="/orders")
-    OrderRest newOrder(@RequestBody OrderRest norder){
+    @PostMapping(value = "/orders")
+    OrderRest newOrder(@RequestBody OrderRest norder) {
 
         Order plainOrder = new Order();
         plainOrder.setStatus(norder.getStatus());
@@ -85,11 +43,11 @@ public class OrderController {
         plainOrder.setTime(norder.getTime());
         or.saveAndFlush(plainOrder);
 
-       OrdersHasProducts thisOrderHasProducts = new OrdersHasProducts();
-       double totalAmount = 0;
+        OrdersHasProducts thisOrderHasProducts = new OrdersHasProducts();
+        double totalAmount = 0;
 
         for (OrderContentRest ocr : norder.getOrderContent()) {
-            
+
             Optional<Product> optionalProduct = pr.findById(ocr.getProduct_id());
 
             if (optionalProduct.isPresent()) {
@@ -106,11 +64,13 @@ public class OrderController {
                 thisOrderHasProducts.setUnit_price(product.getPrice());
                 ohpr.saveAndFlush(thisOrderHasProducts);
 
-                totalAmount = totalAmount + (ocr.getQuantity())*(product.getPrice());
+                totalAmount = totalAmount + (ocr.getQuantity()) * (product.getPrice());
 
-            } //faltaría el else por si no existe
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+            }
         }
-        
+
         plainOrder.setAmount(totalAmount);
         or.saveAndFlush(plainOrder);
 
