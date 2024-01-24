@@ -3,7 +3,6 @@ package practica2023.ecommerce.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +19,6 @@ import practica2023.ecommerce.entities.Basket;
 import practica2023.ecommerce.entities.BasketsHasProducts;
 import practica2023.ecommerce.entities.Product;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -36,11 +34,6 @@ public class BasketController {
     IngredientRepository ir;
     @Autowired
     ProductRepository pr;
-
-    @GetMapping(value = "/baskets")
-    List<Basket> getAllBaskets() {
-        return br.findAll();
-    }
 
     @PostMapping(value = "/baskets")
     BasketRest newBasket(@RequestBody BasketRest nbasket) {
@@ -74,8 +67,9 @@ public class BasketController {
                 bhp.setProduct_id(bcr.getProduct_id());
                 bhp.setQuantity(bcr.getQuantity());
                 bhpr.saveAndFlush(bhp);
-            } // else { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not
-              // found");}
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+            }
 
             /*
              * ResponseStatusException es una clase en Spring Framework que representa una
@@ -136,7 +130,7 @@ public class BasketController {
             mBasket.setBasketAmount(mBasketAmount);
 
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Basket not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Basket not found");
         }
 
         return mBasket;
