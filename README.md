@@ -23,6 +23,8 @@ Yo can check the MVP Firgma prototype [here](https://www.figma.com/file/MNN6AUVT
 ### Already available:
 
 - **DATA** In the data folder you'll find de data model, and scripts for both creating de DDBB and uploading some content to start using the app right the way. Huge thank you to Núria and Marina from [Bungnuts, vegan doughnuts](https://bungnuts.com/) for letting me use their awesome product images for this project.
-- **API** In this folder you'll find the API and some documentation.
+
+
+- **API** In this folder you'll find the API and some documentation.git add .
 
 
